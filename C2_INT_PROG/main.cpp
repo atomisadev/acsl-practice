@@ -21,7 +21,7 @@ int main() {
     std::size_t pos = line.find(" ");
     std::string str1 = line.substr(0, pos);
     std::string str2 = line.substr(pos + 1);
-    std::cout << common_substrings(str1, str2) << std::endl;
+    std::cout << common_substrings(str2, str1) << std::endl;
   }
   return 0;
 }
