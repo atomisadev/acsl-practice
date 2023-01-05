@@ -1,6 +1,9 @@
 def transform(N, P):
+    # Convert the int to a str
     n_str = str(N)
+    # Find the Pth digit from the right
     p_digit = int(n_str[len(n_str) - P])
+    # Initialize an empty string to store the result
     result = ''
     for i, c in enumerate(n_str):
         if i < len(n_str) - P:
