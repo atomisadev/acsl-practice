@@ -1,75 +1,56 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strings"
 	"unicode"
 )
 
 type Node struct {
-	letter    rune
-	count     int
-	leftNode  *Node
-	rightNode *Node
+	key   rune
+	count int
+	left  *Node
+	right *Node
+}
+
+func insert(root **Node, key rune) {
+	if *root == nil {
+		*root = &Node{key: key, count: 1}
+	} else if key == (*root).key {
+		(*root).count++
+	} else if key < (*root).key {
+		insert(&(*root).left, key)
+	} else {
+		insert(&(*root).right, key)
+	}
+}
+
+func countSingleChildNodes(root *Node) int {
+	if root == nil {
+		return 0
+	}
+	count := 0
+	if (root.left != nil && root.right == nil) || (root.left == nil && root.right != nil) {
+		count = root.count
+	}
+	return count + countSingleChildNodes(root.left) + countSingleChildNodes(root.right)
 }
 
 func main() {
-	var inputStrings [5]string
+	reader := bufio.NewReader(os.Stdin)
 	for i := 0; i < 5; i++ {
-		fmt.Scan(&inputStrings[i])
-	}
-
-	var root *Node
-
-	for i := 0; i < 5; i++ {
-		for _, letter := range inputStrings[i] {
-			letter = unicode.ToUpper(letter)
-			if !unicode.IsLetter(letter) {
-				continue
-			}
-
-			if root == nil {
-				root = &Node{letter: letter, count: 1}
-				continue
-			}
-
-			node := root
-			for {
-				if letter < node.letter {
-					if node.leftNode == nil {
-						node.leftNode = &Node{letter: letter, count: 1}
-						break
-					}
-					node = node.leftNode
-					continue
-				}
-
-				if letter > node.letter {
-					if node.rightNode == nil {
-						node.rightNode = &Node{letter: letter, count: 1}
-						break
-					}
-					node = node.rightNode
-					continue
-				}
-
-				node.count++
-				break
+		input, _ := reader.ReadString('\n')
+		input = strings.ToUpper(input)
+		var root *Node
+		for _, c := range input {
+			if unicode.IsLetter(c) {
+				insert(&root, c)
 			}
 		}
-	}
 
-	var sum int
-	var findSingleChildNodes func(*Node)
-	findSingleChildNodes = func(node *Node) {
-		if node == nil {
-			return
-		}
-		if (node.leftNode == nil) != (node.rightNode == nil) {
-			sum += node.count
-		}
-		findSingleChildNodes(node.leftNode)
-		findSingleChildNodes(node.rightNode)
+		count := countSingleChildNodes(root)
+		fmt.Println(count)
 	}
-	findSingleChildNodes(root)
-	fmt.Println(sum);
 }

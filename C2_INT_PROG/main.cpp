@@ -1,27 +1,81 @@
 #include <iostream>
 #include <string>
-#include <fstream>
+#include <algorithm>
+#include <set>
 
-std::string common_substrings(std::string str1, std::string str2) {
-  std::string result_str = "";
-  for (int i = 0; i < str1.length(); i++) {
-    if (str2.find(str1[i]) != std::string::npos) {
-      result_str += str1[i];
-      str2 = str2.substr(str2.find(str1[i]) + 1);
+using namespace std;
+
+void findCommonSubstring(string A, string B, bool reverseA, bool reverseB)
+{
+  if (reverseA)
+    reverse(A.begin(), A.end());
+  if (reverseB)
+    reverse(B.begin(), B.end());
+
+  string commonAB, commonBA;
+  for (char c : A)
+  {
+    auto pos = B.find(c);
+    if (pos != string::npos)
+    {
+      commonAB += c;
+      B.erase(0, pos + 1);
     }
   }
 
-  return result_str;
+  for (char c : B)
+  {
+    auto pos = A.find(c);
+    if (pos != string::npos)
+    {
+      commonBA += c;
+      A.erase(0, pos + 1);
+    }
+  }
+
+  if (reverseA)
+    reverse(commonBA.begin(), commonBA.end());
+  if (reverseB)
+    reverse(commonAB.begin(), commonAB.end());
+
+  string commonABrev = commonAB, commonBArev = commonBA;
+  reverse(commonABrev.begin(), commonABrev.end());
+  reverse(commonBArev.begin(), commonBArev.end());
+
+  set<char> commonLetters;
+  for (char c : commonAB)
+    commonLetters.insert(c);
+  for (char c : commonBA)
+    commonLetters.insert(c);
+  for (char c : commonABrev)
+    commonLetters.insert(c);
+  for (char c : commonBArev)
+    commonLetters.insert(c);
+
+  if (commonLetters.empty())
+  {
+    cout << "NONE" << endl;
+  }
+  else
+  {
+    for (char c : commonLetters)
+    {
+      cout << c;
+    }
+    cout << endl;
+  }
 }
 
-int main() {
-  std::ifstream file("input.txt");
-  std::string line;
-  while (std::getline(file, line)) {
-    std::size_t pos = line.find(" ");
-    std::string str1 = line.substr(0, pos);
-    std::string str2 = line.substr(pos + 1);
-    std::cout << common_substrings(str2, str1) << std::endl;
+int main()
+{
+  for (int i = 0; i < 5; i++)
+  {
+    string A, B;
+    cin >> A >> B;
+    findCommonSubstring(A, B, true, false);
+    findCommonSubstring(A, B, true, true);
+    findCommonSubstring(A, B, false, false);
+    findCommonSubstring(A, B, false, true);
   }
   return 0;
 }
